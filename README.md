@@ -1,4 +1,4 @@
-# Nails Villa
+# Nails Villa.
 
 A production website and appointment booking platform for **Nails Villa**, a personal
 nail-art business in Halifax, Nova Scotia.
