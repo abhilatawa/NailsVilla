@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Nails Villa — Project Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  @page {
+    size: letter;
+    margin: 20mm 18mm 22mm 18mm;
+  }
+
+  :root {
+    --ivory: #fbf7f2;
+    --cream: #f5efe6;
+    --blush: #f3d9d9;
+    --rose: #b76e79;
+    --rose-dark: #9c5560;
+    --gold: #c9a66b;
+    --charcoal: #2b2622;
+    --charcoal-soft: #55504b;
+    --border: #e7ddd1;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--charcoal);
+    background: #ffffff;
+    font-size: 10.8pt;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    color: var(--charcoal);
+    font-weight: 600;
+    margin: 0 0 4mm 0;
+  }
+
+  .cover {
+    text-align: center;
+    padding: 30mm 0 18mm 0;
+  }
+  .cover .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 9pt;
+    color: var(--rose-dark);
+    font-weight: 600;
+    margin-bottom: 6mm;
+  }
+  .cover h1 {
+    font-size: 40pt;
+    line-height: 1.1;
+  }
+  .cover .accent { color: var(--rose); font-style: italic; }
+  .cover .subtitle {
+    font-size: 13pt;
+    color: var(--charcoal-soft);
+    margin-top: 4mm;
+  }
+  .cover .meta {
+    margin-top: 14mm;
+    font-size: 9.5pt;
+    color: var(--charcoal-soft);
+  }
+  .cover .divider {
+    width: 40mm;
+    height: 1px;
+    background: var(--rose);
+    margin: 10mm auto;
+  }
+
+  section {
+    page-break-inside: avoid;
+    margin-bottom: 9mm;
+  }
+  .page-break { page-break-before: always; }
+
+  .section-label {
+    display: inline-block;
+    font-size: 8.5pt;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--rose-dark);
+    background: var(--cream);
+    border: 1px solid var(--border);
+    padding: 1.5mm 3.5mm;
+    border-radius: 2mm;
+    margin-bottom: 4mm;
+  }
+
+  h2 { font-size: 20pt; margin-bottom: 3mm; }
+  h3 { font-size: 13pt; margin-bottom: 2mm; color: var(--charcoal); }
+
+  p { margin: 0 0 3mm 0; }
+
+  .lede {
+    font-size: 12pt;
+    color: var(--charcoal-soft);
+    max-width: 150mm;
+  }
+
+  .callout {
+    background: var(--cream);
+    border-left: 3px solid var(--rose);
+    padding: 4mm 6mm;
+    border-radius: 0 2mm 2mm 0;
+    margin: 5mm 0;
+    font-size: 10.2pt;
+  }
+  .callout strong { color: var(--charcoal); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5mm;
+    margin-top: 4mm;
+  }
+  .card {
+    border: 1px solid var(--border);
+    border-radius: 2.5mm;
+    padding: 5mm;
+    background: #fffdfa;
+  }
+  .card h3 {
+    font-size: 12pt;
+    margin-bottom: 1.5mm;
+  }
+  .card p { font-size: 9.7pt; color: var(--charcoal-soft); margin: 0; }
+  .card .icon-label {
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--rose-dark);
+    font-weight: 700;
+    margin-bottom: 1.5mm;
+  }
+
+  .journey {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 5mm;
+    flex-wrap: wrap;
+  }
+  .journey .step {
+    text-align: center;
+    flex: 1;
+    min-width: 20mm;
+    font-size: 8.6pt;
+    color: var(--charcoal-soft);
+  }
+  .journey .step .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 8mm;
+    height: 8mm;
+    border-radius: 50%;
+    background: var(--charcoal);
+    color: var(--ivory);
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 9pt;
+    margin-bottom: 1.5mm;
+  }
+  .journey .arrow { color: var(--border); font-size: 12pt; padding: 0 1mm; }
+
+  table.status {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 4mm;
+    font-size: 9.6pt;
+  }
+  table.status th {
+    text-align: left;
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--charcoal-soft);
+    border-bottom: 1px solid var(--charcoal);
+    padding: 2mm 2mm 2mm 0;
+  }
+  table.status td {
+    padding: 2.5mm 2mm 2.5mm 0;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 8pt;
+    font-weight: 700;
+    padding: 1mm 2.5mm;
+    border-radius: 3mm;
+    white-space: nowrap;
+  }
+  .badge.done { background: #e3ede6; color: #386148; }
+  .badge.next { background: var(--blush); color: var(--rose-dark); }
+
+  ul.plain { margin: 0; padding-left: 4.5mm; }
+  ul.plain li { margin-bottom: 1.5mm; font-size: 9.8pt; }
+
+  .impact-row {
+    display: flex;
+    gap: 5mm;
+    margin-top: 4mm;
+  }
+  .impact-row .stat {
+    flex: 1;
+    text-align: center;
+    border: 1px solid var(--border);
+    border-radius: 2.5mm;
+    padding: 5mm 3mm;
+  }
+  .impact-row .stat .big {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22pt;
+    color: var(--rose-dark);
+    font-weight: 600;
+    line-height: 1;
+  }
+  .impact-row .stat .label {
+    font-size: 8.4pt;
+    color: var(--charcoal-soft);
+    margin-top: 2mm;
+  }
+
+  .shots h2 { text-align: center; }
+  .shots .intro { text-align: center; max-width: 140mm; margin: 0 auto 8mm auto; }
+  .shot {
+    margin-bottom: 8mm;
+    page-break-inside: avoid;
+  }
+  .shot img {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 2mm;
+    display: block;
+  }
+  .shot .caption {
+    margin-top: 3mm;
+    text-align: center;
+  }
+  .shot .caption .title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13pt;
+    color: var(--charcoal);
+  }
+  .shot .caption .desc {
+    font-size: 9.3pt;
+    color: var(--charcoal-soft);
+    max-width: 140mm;
+    margin: 1mm auto 0 auto;
+  }
+
+  footer.pagefoot {
+    margin-top: 12mm;
+    padding-top: 4mm;
+    border-top: 1px solid var(--border);
+    font-size: 8pt;
+    color: var(--charcoal-soft);
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="eyebrow">Project Overview — Business Briefing</div>
+  <h1>Nails Villa</h1>
+  <p class="subtitle">Online Booking Platform for a Personal Nail-Art Studio in Halifax, Nova Scotia</p>
+  <div class="divider"></div>
+  <p class="meta">Prepared for internal review<br/>September 2026</p>
+</div>
+
+<section class="page-break">
+  <span class="section-label">Executive Summary</span>
+  <h2>What we built, in one paragraph</h2>
+  <p class="lede">
+    Nails Villa is a real, working website and appointment-booking system for an independent
+    nail-art business. A visitor can browse services, see real prices and durations, book an
+    appointment in under a minute, and receive an instant confirmation — all without a phone
+    call. Behind the scenes, the system is built the way a bank or airline booking system is
+    built: it is technically impossible for two customers to be double-booked into the same
+    time slot, even if they try at the exact same moment.
+  </p>
+  <div class="callout">
+    <strong>Where things stand today:</strong> the customer-facing website and the full booking
+    engine are complete and have been tested end-to-end, including under real concurrent load.
+    The owner's admin control panel (managing services, hours, and appointments from a
+    dashboard) is the next phase of work.
+  </div>
+</section>
+
+<section>
+  <span class="section-label">The Opportunity</span>
+  <h2>Why this matters for a small business</h2>
+  <p>
+    Independent, appointment-based businesses like a personal nail studio typically lose
+    potential customers in a few predictable ways: no way to book outside of a phone call
+    during business hours, no visible pricing or availability, and no professional web
+    presence next to larger competitors. Every one of those is a lost booking.
+  </p>
+  <div class="grid">
+    <div class="card">
+      <div class="icon-label">Problem</div>
+      <h3>Booking friction</h3>
+      <p>Customers can only book by calling during open hours, and a missed call is often a lost customer.</p>
+    </div>
+    <div class="card">
+      <div class="icon-label">Solution</div>
+      <h3>24/7 self-serve booking</h3>
+      <p>Customers see real availability and book instantly, any time of day, from any device.</p>
+    </div>
+    <div class="card">
+      <div class="icon-label">Problem</div>
+      <h3>No online presence</h3>
+      <p>No way for a new customer to discover services, pricing, or the quality of the work.</p>
+    </div>
+    <div class="card">
+      <div class="icon-label">Solution</div>
+      <h3>A premium, mobile-first website</h3>
+      <p>A clean, professional brand presence built around converting visitors into booked appointments.</p>
+    </div>
+  </div>
+</section>
+
+<section class="page-break">
+  <span class="section-label">How It Works</span>
+  <h2>The customer journey</h2>
+  <p>The entire site is designed around one goal: turning a visitor into a booked appointment, without friction and without requiring an account.</p>
+  <div class="journey">
+    <div class="step"><div class="num">1</div>Discover the<br/>website</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="num">2</div>Browse services<br/>&amp; gallery</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="num">3</div>Pick a service,<br/>date &amp; time</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="num">4</div>Enter contact<br/>details</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="num">5</div>Review &amp;<br/>confirm</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="num">6</div>Instant<br/>confirmation</div>
+  </div>
+  <div class="callout">
+    <strong>No forced sign-up.</strong> A customer can complete a full booking as a guest with
+    just their name, email, and phone number. This is a deliberate choice — every extra step
+    between "I want an appointment" and "I have an appointment" is a chance to lose the
+    customer.
+  </div>
+</section>
+
+<section>
+  <span class="section-label">Key Features</span>
+  <h2>What the platform actually does</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Real-time availability</h3>
+      <p>Booking times shown to customers are calculated live from actual business hours, existing appointments, and blocked-off time — never a static calendar.</p>
+    </div>
+    <div class="card">
+      <h3>Double-booking protection</h3>
+      <p>The system is built so that two customers can never be booked into the same slot, even if they submit at the exact same second — verified with an automated stress test.</p>
+    </div>
+    <div class="card">
+      <h3>Flexible pricing per service</h3>
+      <p>Services can be priced as a fixed amount, a "starting from" price, or a range — matching how nail art is actually priced in practice.</p>
+    </div>
+    <div class="card">
+      <h3>Guest or account booking</h3>
+      <p>Customers can book instantly as a guest, or create an account to manage upcoming and past appointments.</p>
+    </div>
+    <div class="card">
+      <h3>Built-in gallery &amp; reviews</h3>
+      <p>A photo gallery and customer review system are fully built and ready — populated as soon as the owner adds real photos and reviews start coming in.</p>
+    </div>
+    <div class="card">
+      <h3>Mobile-first design</h3>
+      <p>Designed to be booked comfortably with one hand on a phone, since most visitors to a personal beauty business arrive on mobile.</p>
+    </div>
+  </div>
+</section>
+
+<section class="page-break">
+  <span class="section-label">Technology &amp; Security</span>
+  <h2>Built on a production-grade foundation</h2>
+  <p>
+    This isn't a template or a page builder — it's custom software, built with the same
+    categories of technology used by established consumer booking platforms, chosen
+    specifically so the business can grow into it rather than outgrow it.
+  </p>
+  <ul class="plain">
+    <li><strong>Frontend (what customers see):</strong> a modern, fast web application (React) that works identically well on a phone, tablet, or desktop.</li>
+    <li><strong>Backend (the business logic):</strong> a Java/Spring Boot application — an enterprise-grade platform used by banks, airlines, and large-scale e-commerce systems — handling every booking rule and security check.</li>
+    <li><strong>Database:</strong> PostgreSQL, an industry-standard, highly reliable database used to store every service, appointment, and customer record safely.</li>
+    <li><strong>Security:</strong> passwords are never stored in readable form (industry-standard one-way encryption), login sessions use secure, time-limited tokens, and every sensitive action is checked on the server — never trusted from the browser alone.</li>
+    <li><strong>Portability:</strong> the entire system runs in standardized containers (Docker), meaning it can be deployed to any modern cloud provider without being locked into one vendor.</li>
+    <li><strong>Quality assurance:</strong> the booking engine has automated tests that run the exact double-booking scenario described above and confirm it can never happen.</li>
+  </ul>
+</section>
+
+<section>
+  <span class="section-label">Project Status</span>
+  <h2>What's done, and what's next</h2>
+  <table class="status">
+    <tr><th style="width:45%">Milestone</th><th style="width:20%">Status</th><th>Notes</th></tr>
+    <tr>
+      <td>Foundation &amp; infrastructure</td>
+      <td><span class="badge done">Complete</span></td>
+      <td>Project setup, database, deployment pipeline</td>
+    </tr>
+    <tr>
+      <td>Booking engine &amp; accounts</td>
+      <td><span class="badge done">Complete</span></td>
+      <td>Availability, booking, double-booking protection, login/registration</td>
+    </tr>
+    <tr>
+      <td>Public website &amp; booking flow</td>
+      <td><span class="badge done">Complete</span></td>
+      <td>Homepage, services, gallery, about, contact, full booking wizard</td>
+    </tr>
+    <tr>
+      <td>Customer accounts area</td>
+      <td><span class="badge next">Next</span></td>
+      <td>View/cancel/reschedule appointments, profile, leave a review</td>
+    </tr>
+    <tr>
+      <td>Owner's admin dashboard</td>
+      <td><span class="badge next">Next</span></td>
+      <td>Manage services, prices, hours, appointments, gallery photos</td>
+    </tr>
+    <tr>
+      <td>Email notifications</td>
+      <td><span class="badge next">Next</span></td>
+      <td>Booking confirmations, reminders, cancellations</td>
+    </tr>
+    <tr>
+      <td>Final security &amp; performance review</td>
+      <td><span class="badge next">Next</span></td>
+      <td>Accessibility, SEO, load testing, launch readiness</td>
+    </tr>
+  </table>
+</section>
+
+<section class="page-break">
+  <span class="section-label">Business Impact</span>
+  <h2>What this is worth to the business</h2>
+  <div class="impact-row">
+    <div class="stat"><div class="big">24/7</div><div class="label">Booking availability, no missed calls</div></div>
+    <div class="stat"><div class="big">0</div><div class="label">Double-bookings possible, by design</div></div>
+    <div class="stat"><div class="big">1&nbsp;min</div><div class="label">Typical time to complete a booking</div></div>
+    <div class="stat"><div class="big">100%</div><div class="label">Mobile-friendly, one-handed booking</div></div>
+  </div>
+  <p style="margin-top:6mm;">
+    Beyond the numbers, the platform gives the business a professional, trustworthy presence
+    that puts it on equal footing with larger salon chains, while remaining true to what makes
+    it special: a personal, one-on-one nail-art studio. The architecture is intentionally
+    conservative — no experimental technology, no vendor lock-in — so future maintenance costs
+    stay low and the system can keep growing with the business.
+  </p>
+</section>
+
+<div class="page-break shots">
+  <span class="section-label">Appendix</span>
+  <h2>The Website Today</h2>
+  <p class="intro">A look at the live application — running end-to-end against the real booking system, not a mockup.</p>
+
+  <div class="shot">
+    <img src="homepage.jpg" alt="Nails Villa homepage" />
+    <div class="caption">
+      <div class="title">Homepage</div>
+      <div class="desc">The primary entry point — brand introduction, featured services, and a direct path to booking.</div>
+    </div>
+  </div>
+
+  <div class="shot">
+    <img src="services.jpg" alt="Nails Villa services page" />
+    <div class="caption">
+      <div class="title">Services Catalog</div>
+      <div class="desc">Real services with category filtering, transparent pricing, and durations — pulled live from the database.</div>
+    </div>
+  </div>
+
+  <div class="shot">
+    <img src="booking.jpg" alt="Nails Villa booking flow" />
+    <div class="caption">
+      <div class="title">Booking Flow</div>
+      <div class="desc">The guided, step-by-step booking wizard — service, date, time, details, and confirmation.</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

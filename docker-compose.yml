@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-nailsvilla}
+      POSTGRES_USER: ${DATABASE_USERNAME:-nailsvilla}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-nailsvilla}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DATABASE_USERNAME:-nailsvilla}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/${DATABASE_NAME:-nailsvilla}
+      DATABASE_USERNAME: ${DATABASE_USERNAME:-nailsvilla}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-nailsvilla}
+      JWT_SECRET: ${JWT_SECRET:-dev-only-secret-change-me-dev-only-secret-change-me}
+      SALON_NAME: ${SALON_NAME:-Nails Villa}
+      SALON_TIMEZONE: ${SALON_TIMEZONE:-America/Halifax}
+      SALON_CURRENCY: ${SALON_CURRENCY:-CAD}
+      SALON_CITY: ${SALON_CITY:-Halifax}
+      SALON_PROVINCE: ${SALON_PROVINCE:-Nova Scotia}
+      SALON_COUNTRY: ${SALON_COUNTRY:-Canada}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:8081}
+      MAIL_HOST: ${MAIL_HOST:-localhost}
+      MAIL_PORT: ${MAIL_PORT:-1025}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+    ports:
+      - '8080:8080'
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    ports:
+      - '8081:80'
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
