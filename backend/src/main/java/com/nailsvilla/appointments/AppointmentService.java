@@ -8,6 +8,7 @@ import com.nailsvilla.common.ApiException;
 import com.nailsvilla.common.Money;
 import com.nailsvilla.customers.Customer;
 import com.nailsvilla.customers.CustomerService;
+import com.nailsvilla.notifications.AppointmentNotification;
 import com.nailsvilla.services.NailService;
 import com.nailsvilla.services.NailServiceRepository;
 import com.nailsvilla.services.PriceType;
@@ -24,6 +25,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,7 @@ public class AppointmentService {
     private final SettingsService settingsService;
     private final IdempotencyRecordRepository idempotencyRecordRepository;
     private final ObjectMapper objectMapper;
+    private final ApplicationEventPublisher eventPublisher;
     private final Clock clock;
 
     public AppointmentService(
@@ -55,6 +58,7 @@ public class AppointmentService {
             SettingsService settingsService,
             IdempotencyRecordRepository idempotencyRecordRepository,
             ObjectMapper objectMapper,
+            ApplicationEventPublisher eventPublisher,
             Clock clock
     ) {
         this.appointmentRepository = appointmentRepository;
@@ -66,6 +70,7 @@ public class AppointmentService {
         this.settingsService = settingsService;
         this.idempotencyRecordRepository = idempotencyRecordRepository;
         this.objectMapper = objectMapper;
+        this.eventPublisher = eventPublisher;
         this.clock = clock;
     }
 
@@ -118,6 +123,7 @@ public class AppointmentService {
         record.setExpiresAt(now.plus(IDEMPOTENCY_TTL));
         idempotencyRecordRepository.save(record);
 
+        publish(AppointmentChangedEvent.Change.BOOKED, saved, customer, service, settings);
         return response;
     }
 
@@ -149,7 +155,11 @@ public class AppointmentService {
         appointment.setStatus(AppointmentStatus.CANCELLED);
         appointment.setCancellationReason(reason);
         appointment.setUpdatedAt(clock.instant());
-        return toResponse(appointment, requireService(appointment.getServiceId()), settingsService.getSettings());
+
+        NailService service = requireService(appointment.getServiceId());
+        BusinessSettings settings = settingsService.getSettings();
+        publish(AppointmentChangedEvent.Change.CANCELLED, appointment, requireCustomer(userId), service, settings);
+        return toResponse(appointment, service, settings);
     }
 
     @Transactional
@@ -176,6 +186,7 @@ public class AppointmentService {
             throw appointmentUnavailable();
         }
 
+        publish(AppointmentChangedEvent.Change.RESCHEDULED, appointment, requireCustomer(userId), service, settings);
         return toResponse(appointment, service, settings);
     }
 
@@ -196,8 +207,7 @@ public class AppointmentService {
     }
 
     private Appointment requireOwnedAppointment(UUID appointmentId, UUID userId) {
-        Customer customer = customerService.findByUserId(userId)
-                .orElseThrow(this::appointmentNotFound);
+        Customer customer = requireCustomer(userId);
         return appointmentRepository.findByIdAndCustomerId(appointmentId, customer.getId())
                 .orElseThrow(this::appointmentNotFound);
     }
@@ -277,6 +287,34 @@ public class AppointmentService {
                 settings.getCancellationWindowHours(),
                 appointment.getCustomerNotes()
         );
+    }
+
+    private Customer requireCustomer(UUID userId) {
+        return customerService.findByUserId(userId).orElseThrow(this::appointmentNotFound);
+    }
+
+    /** Emails go out after commit — see {@link AppointmentNotificationListener}. */
+    private void publish(AppointmentChangedEvent.Change change, Appointment appointment, Customer customer,
+                         NailService service, BusinessSettings settings) {
+        AppointmentResponse response = toResponse(appointment, service, settings);
+        AppointmentNotification notification = new AppointmentNotification(
+                appointment.getId(),
+                settings.getSalonName(),
+                customer.getFirstName() + " " + customer.getLastName(),
+                customer.getEmail(),
+                customer.getPhone(),
+                service.getName(),
+                response.date(),
+                response.startTime(),
+                response.endTime(),
+                response.price(),
+                response.currency(),
+                appointment.getStatus().name(),
+                response.businessLocation(),
+                appointment.getCustomerNotes(),
+                appointment.getCancellationReason()
+        );
+        eventPublisher.publishEvent(new AppointmentChangedEvent(change, notification));
     }
 
     private NailService requireService(UUID serviceId) {

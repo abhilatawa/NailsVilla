@@ -16,3 +16,6 @@ frontend/node_modules/.tmp/
 *.iml
 .vscode/
 .DS_Store
+.vercel
+.env*
+!.env.example
