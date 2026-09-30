@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { portfolio } from '@/features/gallery/portfolio'
 import { ServiceCard } from '@/features/services/components/ServiceCard'
 import { useServices } from '@/features/services/useServices'
 import { useReviews } from '@/features/reviews/useReviews'
@@ -31,6 +32,13 @@ const whyNailsVilla = [
     title: 'Quality-focused service',
     description: 'A calm, comfortable space and a focus on doing the work right.',
   },
+]
+
+const galleryPreview = [
+  portfolio.classicFrenchDaisy,
+  portfolio.navyGoldMarble,
+  portfolio.mochaChromeAlmond,
+  portfolio.heartsAndDots,
 ]
 
 export function HomePage() {
@@ -99,9 +107,25 @@ export function HomePage() {
         <div className="mx-auto max-w-6xl px-4 text-center sm:px-6">
           <h2 className="font-display text-3xl text-charcoal">Nail Art Gallery</h2>
           <p className="mx-auto mt-2 max-w-xl text-charcoal-soft">
-            Our portfolio is being photographed and will be published here soon.
+            French tips, soft nudes, chrome, marble and hand-painted art — a few favourites from the portfolio.
           </p>
-          <Button className="mt-8" variant="secondary" asChild>
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+            {galleryPreview.map((photo) => (
+              <Link
+                key={photo.id}
+                to="/gallery"
+                className="group aspect-[3/4] overflow-hidden rounded-md border border-border bg-cream"
+              >
+                <img
+                  src={photo.url}
+                  alt={photo.altText}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </Link>
+            ))}
+          </div>
+          <Button className="mt-10" variant="secondary" asChild>
             <Link to="/gallery">View Gallery</Link>
           </Button>
         </div>
