@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
 import { GalleryGrid } from '@/features/gallery/components/GalleryGrid'
+import { ColourPalette } from '@/features/gallery/components/ColourPalette'
 import { Lookbook } from '@/features/gallery/components/Lookbook'
 import { portfolioPhotos } from '@/features/gallery/portfolio'
 import { useGallery } from '@/features/gallery/useGallery'
@@ -42,8 +43,22 @@ export function GalleryPage() {
         </div>
       </section>
 
+      {/* Colour palette */}
+      <section className="border-t border-border py-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="mb-10 text-center">
+            <p className="text-xs uppercase tracking-[0.3em] text-gold">Mini Booklet</p>
+            <h2 className="mt-3 font-display text-3xl text-charcoal sm:text-4xl">Colour Palette</h2>
+            <p className="mx-auto mt-2 max-w-xl text-charcoal-soft">
+              Every colour family, light to deep. Pick a shade, mix a few, or use it as a starting point for your set.
+            </p>
+          </div>
+          <ColourPalette />
+        </div>
+      </section>
+
       {/* CTA */}
-      <section className="py-20 text-center">
+      <section className="border-t border-border bg-cream py-20 text-center">
         <div className="mx-auto max-w-2xl px-4 sm:px-6">
           <h2 className="font-display text-3xl text-charcoal">Saw something you love?</h2>
           <p className="mt-3 text-charcoal-soft">
