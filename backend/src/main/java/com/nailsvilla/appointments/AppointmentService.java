@@ -152,12 +152,19 @@ public class AppointmentService {
             throw new ApiException(HttpStatus.CONFLICT, "APPOINTMENT_NOT_CANCELLABLE",
                     "This appointment can no longer be cancelled.");
         }
+        BusinessSettings settings = settingsService.getSettings();
+        Instant cancellationDeadline = appointment.getStartAt()
+                .minus(Duration.ofHours(settings.getCancellationWindowHours()));
+        if (!clock.instant().isBefore(cancellationDeadline)) {
+            throw new ApiException(HttpStatus.CONFLICT, "CANCELLATION_WINDOW_CLOSED",
+                    "Appointments can only be cancelled online up to %d hours before they start. Please contact us directly."
+                            .formatted(settings.getCancellationWindowHours()));
+        }
         appointment.setStatus(AppointmentStatus.CANCELLED);
         appointment.setCancellationReason(reason);
         appointment.setUpdatedAt(clock.instant());
 
         NailService service = requireService(appointment.getServiceId());
-        BusinessSettings settings = settingsService.getSettings();
         publish(AppointmentChangedEvent.Change.CANCELLED, appointment, requireCustomer(userId), service, settings);
         return toResponse(appointment, service, settings);
     }
