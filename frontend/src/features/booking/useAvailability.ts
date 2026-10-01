@@ -7,5 +7,8 @@ export function useAvailability(serviceId: string | undefined, date: string | un
     queryKey: ['availability', serviceId, date],
     queryFn: () => apiClient.get<AvailabilityResponse>(`/availability?date=${date}&serviceId=${serviceId}`),
     enabled: Boolean(serviceId && date),
+    // Someone else may book while this page is open — keep the greyed-out slots current.
+    refetchInterval: 60 * 1000,
+    refetchOnWindowFocus: true,
   })
 }

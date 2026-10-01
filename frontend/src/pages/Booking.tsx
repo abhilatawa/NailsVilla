@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useLocation } from 'react-router-dom'
 import { ConfirmationStep } from '@/features/booking/components/ConfirmationStep'
 import { DateStep } from '@/features/booking/components/DateStep'
@@ -7,8 +8,10 @@ import { ReviewStep } from '@/features/booking/components/ReviewStep'
 import { ServiceStep } from '@/features/booking/components/ServiceStep'
 import { StepIndicator } from '@/features/booking/components/StepIndicator'
 import { TimeStep } from '@/features/booking/components/TimeStep'
+import { useAuth } from '@/features/auth/useAuth'
 import { useCreateAppointment } from '@/features/booking/useCreateAppointment'
 import { useService } from '@/features/services/useServices'
+import { toast } from '@/lib/toastStore'
 import { ApiRequestError } from '@/types/api'
 import type { Appointment } from '@/types/appointment'
 import type { Service } from '@/types/service'
@@ -38,6 +41,8 @@ export function BookingPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preselectedService])
 
+  const auth = useAuth()
+  const queryClient = useQueryClient()
   const createAppointment = useCreateAppointment()
   const idempotencyKeyRef = useRef(crypto.randomUUID())
 
@@ -60,6 +65,16 @@ export function BookingPage() {
       })
       setConfirmedAppointment(appointment)
     } catch (error) {
+      // Someone else took this time between choosing it and confirming: send the
+      // customer back to pick again from fresh availability, with a new booking attempt.
+      if (error instanceof ApiRequestError && error.apiError.code === 'APPOINTMENT_UNAVAILABLE') {
+        await queryClient.invalidateQueries({ queryKey: ['availability'] })
+        idempotencyKeyRef.current = crypto.randomUUID()
+        setStartTime(null)
+        setStep('time')
+        toast.error('Sorry — that time was just booked. Please choose another time.')
+        return
+      }
       setSubmitError(error instanceof ApiRequestError ? error.apiError.message : 'Something went wrong. Please try again.')
     }
   }
@@ -103,7 +118,12 @@ export function BookingPage() {
 
         {step === 'details' && (
           <DetailsStep
-            defaultValues={details ?? {}}
+            defaultValues={
+              details ??
+              (auth.user
+                ? { firstName: auth.user.firstName, lastName: auth.user.lastName, email: auth.user.email }
+                : {})
+            }
             onBack={() => setStep('time')}
             onContinue={(values) => {
               setDetails(values)

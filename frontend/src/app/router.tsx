@@ -1,5 +1,6 @@
 import { type ReactNode, Suspense } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
+import { RequireAuth } from '@/components/auth/RequireAuth'
 import { AdminLayout } from '@/components/layout/AdminLayout'
 import { PublicLayout } from '@/components/layout/PublicLayout'
 import {
@@ -34,13 +35,20 @@ export const router = createBrowserRouter([
       { path: '/book', element: withSuspense(<BookingPage />) },
       { path: '/login', element: withSuspense(<LoginPage />) },
       { path: '/register', element: withSuspense(<RegisterPage />) },
-      { path: '/dashboard', element: withSuspense(<DashboardPage />) },
+      {
+        path: '/dashboard',
+        element: <RequireAuth>{withSuspense(<DashboardPage />)}</RequireAuth>,
+      },
       { path: '*', element: withSuspense(<NotFoundPage />) },
     ],
   },
   {
     path: '/admin',
-    element: <AdminLayout />,
+    element: (
+      <RequireAuth role="ADMIN">
+        <AdminLayout />
+      </RequireAuth>
+    ),
     children: [{ index: true, element: withSuspense(<AdminDashboardPage />) }],
   },
 ])

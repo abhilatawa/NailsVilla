@@ -1,16 +1,26 @@
+import { getAccessToken, refreshSession } from '@/lib/authStore'
 import { ApiRequestError, type ApiError } from '@/types/api'
 
 const API_BASE_URL = '/api/v1'
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+async function request<T>(path: string, init?: RequestInit, isRetry = false): Promise<T> {
+  const accessToken = getAccessToken()
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
     headers: {
       'Content-Type': 'application/json',
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       ...init?.headers,
     },
     credentials: 'include',
   })
+
+  // Access tokens are short-lived: on a 401, refresh the session once and replay the request.
+  if (response.status === 401 && accessToken && !isRetry && !path.startsWith('/auth/')) {
+    if (await refreshSession()) {
+      return request<T>(path, init, true)
+    }
+  }
 
   if (!response.ok) {
     const body = (await response.json().catch(() => null)) as ApiError | null

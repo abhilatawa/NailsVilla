@@ -71,7 +71,9 @@ public class AvailabilityService {
 
         Instant earliestBookable = clock.instant().plusSeconds(settings.getMinimumBookingNoticeMinutes() * 60L);
 
-        List<TimeSlot> available = new ArrayList<>();
+        // Slots inside the minimum-notice window are dropped entirely; slots taken by an
+        // existing appointment or blocked time are kept but marked unavailable.
+        List<TimeSlot> slots = new ArrayList<>();
         for (TimeSlot candidate : candidates) {
             Instant candidateStart = ZonedDateTime.of(date, candidate.start(), zone).toInstant();
             Instant candidateEnd = ZonedDateTime.of(date, candidate.end(), zone).toInstant();
@@ -79,13 +81,11 @@ public class AvailabilityService {
             if (candidateStart.isBefore(earliestBookable)) {
                 continue;
             }
-            if (overlapsAny(candidateStart, candidateEnd, existingAppointments, blockedTimes)) {
-                continue;
-            }
-            available.add(candidate);
+            boolean taken = overlapsAny(candidateStart, candidateEnd, existingAppointments, blockedTimes);
+            slots.add(new TimeSlot(candidate.start(), candidate.end(), !taken));
         }
 
-        return new AvailabilityResponse(date, zone.getId(), available);
+        return new AvailabilityResponse(date, zone.getId(), slots);
     }
 
     private List<TimeSlot> generateCandidateSlots(LocalTime open, LocalTime close, int slotLengthMinutes) {
@@ -93,7 +93,7 @@ public class AvailabilityService {
         LocalTime cursor = open;
         while (!cursor.plusMinutes(slotLengthMinutes).isAfter(close)) {
             LocalTime slotEnd = cursor.plusMinutes(slotLengthMinutes);
-            slots.add(new TimeSlot(cursor, slotEnd));
+            slots.add(new TimeSlot(cursor, slotEnd, true));
             cursor = slotEnd;
         }
         return slots;

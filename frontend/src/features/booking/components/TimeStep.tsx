@@ -17,6 +17,9 @@ interface TimeStepProps {
 
 export function TimeStep({ serviceId, date, selectedStartTime, onSelect, onBack, onContinue }: TimeStepProps) {
   const { data, isLoading, isError, refetch } = useAvailability(serviceId, date)
+  // A selected time can be taken by someone else while this page is open.
+  const selectionIsAvailable =
+    selectedStartTime !== null && Boolean(data?.slots.some((slot) => slot.start === selectedStartTime && slot.available))
 
   return (
     <div>
@@ -35,11 +38,26 @@ export function TimeStep({ serviceId, date, selectedStartTime, onSelect, onBack,
         ) : !data || data.slots.length === 0 ? (
           <EmptyState title="No times available" description="Please choose a different date." />
         ) : (
-          <TimeSlotGrid
-            slots={data.slots.map((slot) => ({ value: slot.start, label: formatTime(slot.start) }))}
-            selected={selectedStartTime}
-            onSelect={onSelect}
-          />
+          <>
+            {data.slots.every((slot) => !slot.available) ? (
+              <p className="mb-4 text-sm text-charcoal-soft">
+                This day is fully booked. Please choose a different date.
+              </p>
+            ) : (
+              data.slots.some((slot) => !slot.available) && (
+                <p className="mb-4 text-sm text-charcoal-soft">Greyed-out times are already booked.</p>
+              )
+            )}
+            <TimeSlotGrid
+              slots={data.slots.map((slot) => ({
+                value: slot.start,
+                label: formatTime(slot.start),
+                disabled: !slot.available,
+              }))}
+              selected={selectedStartTime}
+              onSelect={onSelect}
+            />
+          </>
         )}
       </div>
 
@@ -47,7 +65,7 @@ export function TimeStep({ serviceId, date, selectedStartTime, onSelect, onBack,
         <Button variant="secondary" onClick={onBack}>
           Back
         </Button>
-        <Button disabled={!selectedStartTime} onClick={onContinue}>
+        <Button disabled={!selectionIsAvailable} onClick={onContinue}>
           Continue
         </Button>
       </div>
