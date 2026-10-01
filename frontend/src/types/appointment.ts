@@ -3,6 +3,8 @@ export type AppointmentStatus = 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELL
 export interface TimeSlot {
   start: string
   end: string
+  /** False when another booking (or blocked time) already holds this window. */
+  available: boolean
 }
 
 export interface AvailabilityResponse {
@@ -36,4 +38,25 @@ export interface CreateAppointmentPayload {
   guestLastName?: string
   guestEmail?: string
   guestPhone?: string
+}
+
+/** A booking as the salon owner sees it (GET /admin/appointments). */
+export interface AdminAppointment {
+  id: string
+  date: string
+  startTime: string
+  endTime: string
+  serviceId: string
+  serviceName: string
+  durationMinutes: number
+  price: number
+  currency: string
+  status: AppointmentStatus
+  customerName: string
+  customerEmail: string | null
+  customerPhone: string | null
+  guest: boolean
+  customerNotes: string | null
+  cancellationReason: string | null
+  createdAt: string
 }

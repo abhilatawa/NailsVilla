@@ -32,13 +32,12 @@ class AppointmentBookingFlowTest extends AbstractIntegrationTest {
     private NailServiceRepository nailServiceRepository;
 
     @Test
-    void guestCanBookAndTheSlotDisappearsFromAvailability_andRetryingWithSameKeyDoesNotDuplicate() {
+    void guestCanBookAndTheSlotIsMarkedUnavailable_andRetryingWithSameKeyDoesNotDuplicate() {
         NailService service = nailServiceRepository.findByActiveTrueOrderByDisplayOrderAsc().get(0);
         LocalDate date = LocalDate.now().plusDays(15);
 
         AvailabilityResponse before = getAvailability(service.getId(), date);
-        assertThat(before.slots()).isNotEmpty();
-        LocalTime time = before.slots().get(0).start();
+        LocalTime time = before.slots().stream().filter(TimeSlot::available).findFirst().orElseThrow().start();
 
         String idempotencyKey = UUID.randomUUID().toString();
         String requestBody = """
@@ -58,7 +57,9 @@ class AppointmentBookingFlowTest extends AbstractIntegrationTest {
         UUID appointmentId = first.getBody().id();
 
         AvailabilityResponse after = getAvailability(service.getId(), date);
-        assertThat(after.slots()).extracting(TimeSlot::start).doesNotContain(time);
+        // The booked slot is still listed (so the booking page can grey it out) but no longer available.
+        assertThat(after.slots()).filteredOn(slot -> slot.start().equals(time))
+                .singleElement().extracting(TimeSlot::available).isEqualTo(false);
 
         // Retrying with the same Idempotency-Key must replay the same appointment, not create a second one.
         ResponseEntity<AppointmentResponse> retry = book(requestBody, idempotencyKey);

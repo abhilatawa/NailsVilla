@@ -3,6 +3,8 @@ import { cn } from '@/lib/utils'
 interface TimeSlotOption {
   value: string
   label: string
+  /** Already booked — shown greyed out and can't be selected. */
+  disabled?: boolean
 }
 
 interface TimeSlotGridProps {
@@ -19,15 +21,20 @@ export function TimeSlotGrid({ slots, selected, onSelect }: TimeSlotGridProps) {
           key={slot.value}
           type="button"
           onClick={() => onSelect(slot.value)}
+          disabled={slot.disabled}
           aria-pressed={selected === slot.value}
+          aria-label={slot.disabled ? `${slot.label}, already booked` : undefined}
           className={cn(
             'rounded-md border px-3 py-2.5 text-sm transition-colors',
-            selected === slot.value
-              ? 'border-charcoal bg-charcoal text-ivory'
-              : 'border-border text-charcoal hover:bg-cream',
+            slot.disabled
+              ? 'cursor-not-allowed border-border bg-cream text-charcoal-soft/50 line-through'
+              : selected === slot.value
+                ? 'border-charcoal bg-charcoal text-ivory'
+                : 'border-border text-charcoal hover:bg-cream',
           )}
         >
           {slot.label}
+          {slot.disabled && <span className="sr-only"> (booked)</span>}
         </button>
       ))}
     </div>
